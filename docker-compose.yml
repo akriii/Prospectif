@@ -1,0 +1,27 @@
+services:
+  api:
+    build: ./backend
+    container_name: prospectif_ai
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    env_file:
+      - .env
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: prospectif-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      # Syncs your local code to the container for instant hot-reloading
+      - ./frontend:/app
+      # Prevents your local node_modules from overwriting the container's isolated modules
+      - /app/node_modules
+    environment:
+      # Forces Vite to poll for file changes (crucial for HMR on Windows/macOS hosts)
+      - CHOKIDAR_USEPOLLING=true
+    restart: unless-stopped

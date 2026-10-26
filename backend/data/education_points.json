@@ -1,0 +1,527 @@
+[
+    {
+        "name": "TM Training Center Northern",
+        "lat": 4.8671959,
+        "lon": 100.7536031
+    },
+    {
+        "name": "Pusat Kecermelangan Sukan",
+        "lat": 4.5812878,
+        "lon": 101.0809791
+    },
+    {
+        "name": "Kolej Komuniti Chenderoh",
+        "lat": 4.7897218,
+        "lon": 100.8979542
+    },
+    {
+        "name": "GiatMARA Padang Rengas",
+        "lat": 4.7916853,
+        "lon": 100.8979542
+    },
+    {
+        "name": "Kolej Komuniti Kuala Kangsar",
+        "lat": 4.7737322,
+        "lon": 100.9429786
+    },
+    {
+        "name": "Kolej Komuniti Cawangan Tapah",
+        "lat": 4.1932343,
+        "lon": 101.2637354
+    },
+    {
+        "name": "Kolej Komuniti Manjung",
+        "lat": 4.2061779,
+        "lon": 100.6737626
+    },
+    {
+        "name": "Kolej Komuniti Bagan Datoh",
+        "lat": 3.8857413,
+        "lon": 100.9337944
+    },
+    {
+        "name": "GiatMARA Kampar",
+        "lat": 4.2757663,
+        "lon": 101.0537668
+    },
+    {
+        "name": "KPTM Ipoh",
+        "lat": 4.5994034,
+        "lon": 101.0999247
+    },
+    {
+        "name": "Kolej Teknikal Sri Ayu",
+        "lat": 4.3365506,
+        "lon": 101.1539508
+    },
+    {
+        "name": "Kolej Menara Jaya",
+        "lat": 4.3303041,
+        "lon": 101.1550141
+    },
+    {
+        "name": "Kolej Komuniti Gerik",
+        "lat": 5.3861635,
+        "lon": 101.0571733
+    },
+    {
+        "name": "Kompas International College",
+        "lat": 4.6072295,
+        "lon": 101.1186634
+    },
+    {
+        "name": "Shen Jai School Of Commerce",
+        "lat": 4.607176,
+        "lon": 101.1186634
+    },
+    {
+        "name": "Sunway College Ipoh",
+        "lat": 4.6219051,
+        "lon": 101.1492777
+    },
+    {
+        "name": "Bestskill College Sitiawan",
+        "lat": 4.2199486,
+        "lon": 100.6928819
+    },
+    {
+        "name": "Institut Delta",
+        "lat": 4.2168316,
+        "lon": 100.6954371
+    },
+    {
+        "name": "Politeknik Bagan Datuk",
+        "lat": 3.8857229,
+        "lon": 100.9353704
+    },
+    {
+        "name": "Kolej Keris",
+        "lat": 4.5915176,
+        "lon": 101.0860768
+    },
+    {
+        "name": "PIA College",
+        "lat": 4.5836117,
+        "lon": 101.0937265
+    },
+    {
+        "name": "PIA College Mechatronic",
+        "lat": 4.5839737,
+        "lon": 101.0927798
+    },
+    {
+        "name": "GiatMARA Bagan Serai",
+        "lat": 4.9477722,
+        "lon": 100.6304575
+    },
+    {
+        "name": "ILSAS Malim Nawar",
+        "lat": 4.3450002,
+        "lon": 101.1196266
+    },
+    {
+        "name": "Fakulti Bahasa & Komunikasi",
+        "lat": 3.6849363,
+        "lon": 101.5229888
+    },
+    {
+        "name": "Kompleks Dewan Kuliah",
+        "lat": 3.683351,
+        "lon": 101.5263164
+    },
+    {
+        "name": "Kompleks Akademik",
+        "lat": 3.7243562,
+        "lon": 101.5332262
+    },
+    {
+        "name": "rumah zarul",
+        "lat": 4.8842552,
+        "lon": 100.7107877
+    },
+    {
+        "name": "Block 1",
+        "lat": 4.3813114,
+        "lon": 100.9685178
+    },
+    {
+        "name": "Block 2",
+        "lat": 4.3810755,
+        "lon": 100.9681909
+    },
+    {
+        "name": "Block 3",
+        "lat": 4.3807925,
+        "lon": 100.9679157
+    },
+    {
+        "name": "Block 4",
+        "lat": 4.3804151,
+        "lon": 100.9677264
+    },
+    {
+        "name": "Block 5",
+        "lat": 4.380078,
+        "lon": 100.9676063
+    },
+    {
+        "name": "Block 23",
+        "lat": 4.3824568,
+        "lon": 100.9684039
+    },
+    {
+        "name": "Block 11",
+        "lat": 4.3805921,
+        "lon": 100.9644071
+    },
+    {
+        "name": "Block 12",
+        "lat": 4.3809902,
+        "lon": 100.9644071
+    },
+    {
+        "name": "Block 13",
+        "lat": 4.3814214,
+        "lon": 100.9643239
+    },
+    {
+        "name": "Block 14",
+        "lat": 4.3818692,
+        "lon": 100.9641742
+    },
+    {
+        "name": "Block 15",
+        "lat": 4.3826902,
+        "lon": 100.964823
+    },
+    {
+        "name": "Block 16",
+        "lat": 4.3826736,
+        "lon": 100.9652388
+    },
+    {
+        "name": "Block 17",
+        "lat": 4.3828893,
+        "lon": 100.9656547
+    },
+    {
+        "name": "Block 18",
+        "lat": 4.3830883,
+        "lon": 100.9660456
+    },
+    {
+        "name": "Block 19",
+        "lat": 4.3834034,
+        "lon": 100.9663034
+    },
+    {
+        "name": "Block 20",
+        "lat": 4.3833371,
+        "lon": 100.9673514
+    },
+    {
+        "name": "Block 21",
+        "lat": 4.3829556,
+        "lon": 100.9676591
+    },
+    {
+        "name": "Block 22",
+        "lat": 4.3826985,
+        "lon": 100.9680251
+    },
+    {
+        "name": "Universiti Teknologi Petronas",
+        "lat": 4.3827314,
+        "lon": 100.970186
+    },
+    {
+        "name": "Perak Education Technology Division",
+        "lat": 4.6548718,
+        "lon": 101.1034021
+    },
+    {
+        "name": "Maxwell College",
+        "lat": 4.6059072,
+        "lon": 101.0724534
+    },
+    {
+        "name": "Universiti Teknologi Petronas",
+        "lat": 4.382732,
+        "lon": 100.9701862
+    },
+    {
+        "name": "UPSI Kampus Sultan Abdul Jalil Shah",
+        "lat": 3.6848984,
+        "lon": 101.5253577
+    },
+    {
+        "name": "Universiti Teknologi MARA Perak",
+        "lat": 4.3564467,
+        "lon": 100.9572653
+    },
+    {
+        "name": "Kolej Perikanan Malaysia Lumut",
+        "lat": 4.2464185,
+        "lon": 100.6557107
+    },
+    {
+        "name": "Kolej Universiti Tunku Abdul Rahman Kampus Perak",
+        "lat": 4.3322414,
+        "lon": 101.1429823
+    },
+    {
+        "name": "Universiti Tunku Abdul Rahman (UTAR)",
+        "lat": 4.3385271,
+        "lon": 101.1386885
+    },
+    {
+        "name": "Lake View Collage",
+        "lat": 4.984956,
+        "lon": 100.6668369
+    },
+    {
+        "name": "Pusat Latihan Teknologi Tinggi (ADTEC) Taiping",
+        "lat": 4.8656339,
+        "lon": 100.6989624
+    },
+    {
+        "name": "Universiti Sultan Azlan Shah",
+        "lat": 4.7532414,
+        "lon": 100.9472228
+    },
+    {
+        "name": "Kolej Matrikulasi Perak",
+        "lat": 4.4437463,
+        "lon": 101.1302582
+    },
+    {
+        "name": "Institut Latihan Kementerian Kesihatan Malaysia (ILKKM) Sultan Azlan Shah",
+        "lat": 4.686855,
+        "lon": 101.1505528
+    },
+    {
+        "name": "UPSI Kampus Sultan Azlan Shah",
+        "lat": 3.7240544,
+        "lon": 101.5273469
+    },
+    {
+        "name": "Politeknik Sultan Azlan Shah",
+        "lat": 3.769419,
+        "lon": 101.4476613
+    },
+    {
+        "name": "Institut Tanah & Ukur Negara",
+        "lat": 3.7636538,
+        "lon": 101.516632
+    },
+    {
+        "name": "Kolej Kemahiran Tinggi MARA Lenggong",
+        "lat": 5.0035368,
+        "lon": 100.9635472
+    },
+    {
+        "name": "Kolej Komuniti Sungai Siput",
+        "lat": 4.8516561,
+        "lon": 101.0509323
+    },
+    {
+        "name": "UiTM Cawangan Perak Kampus Tapah",
+        "lat": 4.1790151,
+        "lon": 101.2198702
+    },
+    {
+        "name": "Kolej Yayasan Felda Kampus Trolak",
+        "lat": 3.9295091,
+        "lon": 101.3483964
+    },
+    {
+        "name": "Kolej Vokasional Slim River",
+        "lat": 3.822975,
+        "lon": 101.3984022
+    },
+    {
+        "name": "Kolej Profesional MARA Seri Iskandar",
+        "lat": 4.3725861,
+        "lon": 100.9462693
+    },
+    {
+        "name": "Kolej Vokasional Seri Iskandar",
+        "lat": 4.3670433,
+        "lon": 100.944171
+    },
+    {
+        "name": "Institut Kemahiran Belia Negara Seri Iskandar",
+        "lat": 4.3690331,
+        "lon": 100.9415781
+    },
+    {
+        "name": "Akademi Pembangunan Belia Malaysia Batu Gajah",
+        "lat": 4.4440835,
+        "lon": 100.9950242
+    },
+    {
+        "name": "Akademi Bomba & Penyelamat Malaysia Perak",
+        "lat": 4.4329696,
+        "lon": 101.0015139
+    },
+    {
+        "name": "IKM Lumut",
+        "lat": 4.1928502,
+        "lon": 100.6573006
+    },
+    {
+        "name": "Universiti Kuala Lumpur Malaysian Institute of Marine Engineering Technology",
+        "lat": 4.2752336,
+        "lon": 100.6686332
+    },
+    {
+        "name": "Kolej Kejururawatan Seri Manjung",
+        "lat": 4.230994,
+        "lon": 100.6263675
+    },
+    {
+        "name": "Kolej Vokasional Seri Manjung",
+        "lat": 4.1827709,
+        "lon": 100.6649666
+    },
+    {
+        "name": "Kolej Komuniti Pasir Salak",
+        "lat": 4.1382676,
+        "lon": 100.9100986
+    },
+    {
+        "name": "Kolej Felcra Seberang Perak",
+        "lat": 4.1460949,
+        "lon": 100.9021125
+    },
+    {
+        "name": "UiTM Teluk Intan",
+        "lat": 4.0058608,
+        "lon": 101.037575
+    },
+    {
+        "name": "GiatMARA Bagan Datoh",
+        "lat": 3.873726,
+        "lon": 100.9338454
+    },
+    {
+        "name": "Pusat Latihan UiTM (ILD Perak)",
+        "lat": 4.2487531,
+        "lon": 101.0355055
+    },
+    {
+        "name": "MRSM Gerik",
+        "lat": 5.3833234,
+        "lon": 101.0549487
+    },
+    {
+        "name": "Kolej Poly-Tech Mara Ipoh",
+        "lat": 4.5993787,
+        "lon": 101.0999432
+    },
+    {
+        "name": "Kolej Universiti Poly-Tech MARA",
+        "lat": 4.6661432,
+        "lon": 101.0913544
+    },
+    {
+        "name": "Institut Tadbiran Islam Perak",
+        "lat": 4.5896701,
+        "lon": 101.1281164
+    },
+    {
+        "name": "Politeknik Ungku Omar",
+        "lat": 4.5891742,
+        "lon": 101.1235748
+    },
+    {
+        "name": "Pusat Kecemerlangan Sukan",
+        "lat": 4.5812191,
+        "lon": 101.0812226
+    },
+    {
+        "name": "GiatMARA Bagan Datuk",
+        "lat": 3.880135,
+        "lon": 100.9339509
+    },
+    {
+        "name": "Quest International University Perak Faculty of Medicine",
+        "lat": 4.5829896,
+        "lon": 101.0918382
+    },
+    {
+        "name": "Institut Latihan Pegawai Awam Perak",
+        "lat": 4.6001492,
+        "lon": 101.1110884
+    },
+    {
+        "name": "FMM Institute Perak",
+        "lat": 4.6016474,
+        "lon": 101.1174568
+    },
+    {
+        "name": "GIATMARA Lumut",
+        "lat": 4.1448379,
+        "lon": 100.7237661
+    },
+    {
+        "name": "Jtmk",
+        "lat": 4.5871425,
+        "lon": 101.121911
+    },
+    {
+        "name": "Jke",
+        "lat": 4.5865005,
+        "lon": 101.1219976
+    },
+    {
+        "name": "Jkp",
+        "lat": 4.5870349,
+        "lon": 101.1233455
+    },
+    {
+        "name": "Kamsis Puo",
+        "lat": 4.5901246,
+        "lon": 101.1210765
+    },
+    {
+        "name": "Sekolah Kejururawatan Hospital Fatimah",
+        "lat": 4.5821024,
+        "lon": 101.1072781
+    },
+    {
+        "name": "Institut Pendidikan Guru Kampus Ipoh",
+        "lat": 4.6520536,
+        "lon": 101.1651287
+    },
+    {
+        "name": "Universiti Kuala Lumpur Royal College of Medicine Perak",
+        "lat": 4.6027243,
+        "lon": 101.0925253
+    },
+    {
+        "name": "Kolej WIT Ipoh",
+        "lat": 4.6055659,
+        "lon": 101.073001
+    },
+    {
+        "name": "Giatmara Tapah",
+        "lat": 4.2430038,
+        "lon": 101.1951019
+    },
+    {
+        "name": "Giatmara Tambun",
+        "lat": 4.6439845,
+        "lon": 101.1572925
+    },
+    {
+        "name": "GIATMARA Gopeng",
+        "lat": 4.4712556,
+        "lon": 101.1648342
+    },
+    {
+        "name": "Pusat Pengajian Tahfiz Al-Quran Dan Hadith Darussolehah",
+        "lat": 4.7631419,
+        "lon": 100.719928
+    }
+]
