@@ -1,12 +1,8 @@
 FROM python:3.11-slim
-
 WORKDIR /app
+RUN apt-get update && apt-get install -y libpq-dev gcc && apt-get clean
 COPY requirements.txt .
-
-RUN apt-get update && apt-get install -y libpq-dev gcc \
-    && pip install --no-cache-dir -r requirements.txt \
-    && apt-get clean
-
-COPY . /app
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+# Use Render's dynamic PORT environment variable
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
