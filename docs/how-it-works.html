@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Prospectif — How It Works</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 20mm; }
+  :root {
+    --ink: #0b0b0b; --ink2: #52514e; --muted: #898781; --hair: #e1e0d9;
+    --accent: #6250d6; --tint: #f5f4f0;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: "Inter", "Segoe UI", system-ui, sans-serif; color: var(--ink); font-size: 10.5pt; line-height: 1.55; margin: 0; }
+  h1 { font-size: 26pt; letter-spacing: -0.5px; margin: 0 0 4px; }
+  h2 { font-size: 15pt; margin: 26px 0 8px; padding-bottom: 6px; border-bottom: 2px solid var(--ink); break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 18px 0 6px; break-after: avoid; }
+  p { margin: 6px 0; }
+  .subtitle { color: var(--muted); text-transform: uppercase; letter-spacing: 2px; font-size: 9pt; font-weight: 600; }
+  .cover { border-bottom: 1px solid var(--hair); padding-bottom: 14px; margin-bottom: 8px; }
+  .meta { color: var(--ink2); font-size: 9pt; margin-top: 10px; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 12px; font-size: 9.5pt; break-inside: avoid; }
+  th { text-align: left; font-weight: 600; color: var(--ink2); border-bottom: 1.5px solid var(--ink2); padding: 5px 8px; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.4px; }
+  td { border-bottom: 1px solid var(--hair); padding: 5px 8px; vertical-align: top; }
+  td:first-child { width: 34%; overflow-wrap: anywhere; }
+  code { font-family: "Cascadia Code", Consolas, monospace; font-size: 9pt; background: var(--tint); padding: 1px 4px; border-radius: 3px; }
+  pre { font-family: "Cascadia Code", Consolas, monospace; font-size: 8.4pt; line-height: 1.4; background: var(--tint); border: 1px solid var(--hair); border-radius: 6px; padding: 10px 12px; white-space: pre; overflow: hidden; break-inside: avoid; margin: 8px 0 12px; }
+  .key { border-left: 3px solid var(--accent); background: #f3f1fd; padding: 8px 12px; margin: 10px 0; border-radius: 0 6px 6px 0; break-inside: avoid; }
+  .warn { border-left: 3px solid #d03b3b; background: #fdf2f2; padding: 8px 12px; margin: 10px 0; border-radius: 0 6px 6px 0; }
+  .scale { display: flex; gap: 2px; margin: 8px 0 4px; }
+  .scale span { flex: 1; height: 14px; }
+  .scale span:first-child { border-radius: 3px 0 0 3px; } .scale span:last-child { border-radius: 0 3px 3px 0; }
+  .scale-labels { display: flex; justify-content: space-between; font-size: 8.5pt; color: var(--ink2); }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .page-break { break-before: page; }
+  ol li, ul li { margin: 3px 0; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+  .toc { columns: 2; font-size: 10pt; margin: 10px 0 0; padding-left: 18px; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="subtitle">Urban Feasibility Engine · Perak</div>
+  <h1>Prospectif — How It Works</h1>
+  <p style="color: var(--ink2); max-width: 560px;">A technical walkthrough of the data pipeline, the scoring brain, and the map visualisation:
+  how district scores are calculated, how anchors become hexagon cells, and how the best micro-cities are ranked and drawn on the Perak map.</p>
+  <div class="meta">Version: October 2026 · Stack: FastAPI · PostGIS (Supabase) · React · deck.gl · MapLibre</div>
+  <ol class="toc">
+    <li>The big picture</li>
+    <li>What each file does</li>
+    <li>District fundamentals</li>
+    <li>How the district score is calculated</li>
+    <li>How each point learns its district</li>
+    <li>Hexagons, anchors &amp; cell index</li>
+    <li>How the map is drawn</li>
+    <li>Tooltip, drawer &amp; verdict</li>
+    <li>Known limitations</li>
+  </ol>
+</div>
+
+<h2>1. The big picture</h2>
+<pre>
+ DATA COLLECTION (scripts, run once)            DATABASE (Supabase / PostGIS)
+ ─────────────────────────────────              ─────────────────────────────
+ fetch_boundaries.py ─► perak_districts.geojson ─┐
+ OpenDOSM CSVs (pop, jobs, income) ──────────────┼─► seed.py ─► districts (polygons)
+ NAPIC CSV (unsold houses) ──────────────────────┘             employment_stats
+ fetch_osm.py ─► lifestyle / education / industry_points.json  property_overhangs
+                          │
+                          ▼
+ BACKEND (FastAPI, Docker :8000)
+ ─────────────────────────────────
+ 1. Load district stats from DB  →  normalise to 0–1
+ 2. Score every district with the pillar's formula
+ 3. Find which district each OSM point sits in (PostGIS)
+ 4. Give every point its district's score  →  send JSON
+                          │
+                          ▼
+ FRONTEND (React + deck.gl + MapLibre, :5173)
+ ─────────────────────────────────
+ 5. Group points into 1.5 km hexagons     →  "cell index"
+ 6. Rank hexagons against each other      →  percentile → colour
+ 7. Draw basemap + district outlines + hexes + pins + tooltip + drawer
+</pre>
+<div class="key"><strong>The key idea:</strong> scores are calculated <em>per district</em> (backend) but shown <em>per hexagon</em> (frontend).
+A hexagon glows red when it sits in a <strong>good district</strong> <em>and</em> contains <strong>many anchors</strong> packed together.</div>
+
+<h2>2. What each file does</h2>
+
+<h3>Data collection — <code>backend/scripts/</code> (run manually, once)</h3>
+<table>
+  <tr><th>File</th><th>Role</th></tr>
+  <tr><td><code>fetch_osm.py</code></td><td>Queries the OpenStreetMap Overpass API for every cafe/mall, university/college and industrial zone inside Perak. Saves each as <code>{name, lat, lon}</code> in three JSON files. These are the <strong>anchors</strong>.</td></tr>
+  <tr><td><code>fetch_boundaries.py</code></td><td>Asks OSM Nominatim for the real outline polygon of each of the 12 districts. It accepts only district-level administrative boundaries (place_rank 12) lying inside Perak's bounding box, tries alternative names (e.g. "Bagan Datoh"), and saves <code>perak_districts.geojson</code>.</td></tr>
+  <tr><td><code>seed.py</code></td><td>Loads the database: district polygons (plus a GiST spatial index), OpenDOSM statistics and NAPIC overhang figures. Safe to re-run.</td></tr>
+</table>
+
+<h3>Data files — <code>backend/data/</code></h3>
+<table>
+  <tr><th>File</th><th>Contents</th></tr>
+  <tr><td><code>population_district.csv</code><br><code>lfs_district.csv</code><br><code>hh_income_district.csv</code></td><td>OpenDOSM data for all of Malaysia; only Perak rows are used.</td></tr>
+  <tr><td><code>napic_overhang.csv</code></td><td>Unsold residential units per Perak district, 2026.</td></tr>
+  <tr><td><code>*_points.json</code></td><td>4,007 lifestyle + 105 education + 263 industry anchors.</td></tr>
+  <tr><td><code>perak_districts.geojson</code></td><td>The 12 district polygons.</td></tr>
+</table>
+
+<h3>Backend application</h3>
+<table>
+  <tr><th>File</th><th>Role</th></tr>
+  <tr><td><code>main.py</code></td><td>Creates the FastAPI app, enables CORS for the frontend, mounts the routers.</td></tr>
+  <tr><td><code>database/session.py</code></td><td>Connects to Supabase via <code>SUPABASE_DATABASE_URL</code> from <code>.env</code>.</td></tr>
+  <tr><td><code>database/models.py</code></td><td>Table definitions: <code>districts</code>, <code>employment_stats</code>, <code>property_overhangs</code>.</td></tr>
+  <tr><td><code>services/spatial_service.py</code></td><td>Loads the three OSM JSON files into memory at start-up; holds <code>normalize()</code>.</td></tr>
+  <tr><td><code>services/layers.py</code></td><td><strong>The rulebook:</strong> the four pillar formulas as data, metric labels, descriptions and the <code>score()</code> function.</td></tr>
+  <tr><td><code>routers/predict.py</code></td><td><strong>The brain:</strong> <code>GET /api/predict/{layer}</code> performs steps 1–4 of the pipeline.</td></tr>
+  <tr><td><code>routers/meta.py</code></td><td><code>/api/layers</code> (pillar list) and <code>/api/districts/boundaries</code> (simplified polygons for drawing).</td></tr>
+  <tr><td><code>utils.py</code></td><td>Old duplicate of the helpers. Not imported anywhere; safe to delete.</td></tr>
+</table>
+
+<h3>Frontend — <code>frontend/src/</code></h3>
+<table>
+  <tr><th>File</th><th>Role</th></tr>
+  <tr><td><code>main.jsx</code></td><td>Boots React with react-query (API fetching and caching).</td></tr>
+  <tr><td><code>App.jsx</code></td><td>Assembles the page: map, left panel, tooltip, drawer, zoom controls.</td></tr>
+  <tr><td><code>store.js</code></td><td>Shared state (zustand): theme, active pillar, glow toggle, selected hex, camera. Theme and pillar persist across reloads.</td></tr>
+  <tr><td><code>lib/api.js</code></td><td>Calls the backend (<code>VITE_API_URL</code>, or localhost in development).</td></tr>
+  <tr><td><code>hooks/useLayerData.js</code></td><td>Fetches a pillar's data and runs the hexagon binning; fetches boundaries and computes label positions.</td></tr>
+  <tr><td><code>lib/hexbin.js</code></td><td><strong>Turns points into hexagons and ranks them</strong> (Section 6).</td></tr>
+  <tr><td><code>lib/verdict.js</code></td><td>Score breakdown maths and the auto-generated verdict.</td></tr>
+  <tr><td><code>lib/format.js</code>, <code>lib/colors.js</code></td><td>Number formatting ("Top 1%", "RM 5,136") and colour conversion.</td></tr>
+  <tr><td><code>config/layers.js</code></td><td>Visual configuration: icons, legend wording, verdict sentences, colour scales, basemaps, hex size, pin zoom threshold.</td></tr>
+  <tr><td><code>components/MapView.jsx</code></td><td>Draws every map layer (Section 7).</td></tr>
+  <tr><td><code>components/ControlPanel.jsx</code>, <code>Legend.jsx</code></td><td>Left floating panel: pillars, logic text, formula chips, legend, glow toggle, theme toggle.</td></tr>
+  <tr><td><code>components/HoverTooltip.jsx</code>, <code>DetailDrawer.jsx</code>, <code>MapControls.jsx</code></td><td>Hover popup, right-hand analytics drawer, zoom/reset buttons.</td></tr>
+</table>
+
+<h2 class="page-break">3. District fundamentals (<code>seed.py</code>)</h2>
+<p>For each of the 12 districts the seeder stores:</p>
+<table>
+  <tr><th>Fundamental</th><th>Source</th><th>Derivation</th></tr>
+  <tr><td>Population</td><td>OpenDOSM population</td><td>Perak, sex = both, age = overall, ethnicity = overall, latest date; × 1,000 (CSV is in thousands).</td></tr>
+  <tr><td>Employed workforce</td><td>OpenDOSM labour force</td><td><code>lf_employed</code>, latest date, × 1,000. Stored in a column named <code>new_jobs_created</code>, but it is <strong>total employed persons</strong>.</td></tr>
+  <tr><td>Median household income</td><td>OpenDOSM income</td><td><code>income_median</code> from the latest survey.</td></tr>
+  <tr><td>Unsold housing units</td><td>NAPIC</td><td>Unsold residential units, summed per district for 2026.</td></tr>
+</table>
+<p>District names differ between sources, so they are reconciled: DOSM's "Larut Dan Matang" and "Selama" are <strong>merged</strong> into "Larut, Matang &amp; Selama" (population and jobs summed, income averaged).</p>
+<p>One fundamental is computed live in <code>predict.py</code>:</p>
+<pre>cafes &amp; malls per 10k residents = lifestyle anchors in district ÷ population × 10,000
+Kinta:  1,897 ÷ 931,000 × 10,000 = 20.4</pre>
+
+<h2>4. How the district score is calculated</h2>
+
+<h3>Step 1 — Normalise every metric to 0–1 (min-max)</h3>
+<pre>normalised = (value − lowest district) ÷ (highest district − lowest district)</pre>
+<p>The best district becomes <strong>1.0</strong>, the worst <strong>0.0</strong>. Example — income: lowest is Hulu Perak (RM 3,701), highest is Manjung (RM 5,380):</p>
+<pre>Kinta:  (5,136 − 3,701) ÷ (5,380 − 3,701) = 0.855</pre>
+<table>
+  <tr><th>Metric</th><th>Meaning</th></tr>
+  <tr><td><code>norm_jobs</code></td><td>Employed workforce (Kinta 448,500 = 1.0; Hulu Perak 30,700 = 0.0)</td></tr>
+  <tr><td><code>norm_income</code></td><td>Median household income</td></tr>
+  <tr><td><code>norm_overhang</code></td><td>Unsold housing; 1.0 = the <em>most</em> unsold (Kinta, 1,420 units)</td></tr>
+  <tr><td><code>norm_lifestyle</code></td><td>Cafes &amp; malls per 10k residents</td></tr>
+  <tr><td><code>edu_index</code></td><td><strong>Proxy, not real data:</strong> 1.0 for Kampar, Muallim, Perak Tengah, Kinta (university towns); 0.4 for all others</td></tr>
+</table>
+
+<h3>Step 2 — Apply the pillar's weighted formula (<code>services/layers.py</code>)</h3>
+<p>"Inverted" terms use <code>1 − value</code>, meaning <em>lower is better</em> (e.g. less unsold housing is good).</p>
+<table>
+  <tr><th>Pillar</th><th>Formula</th><th>Anchors used</th></tr>
+  <tr><td><strong>Apex Score</strong></td><td>30% jobs + 30% income + 20% edu + 20% (1 − overhang)</td><td>all three</td></tr>
+  <tr><td><strong>Talent Magnet</strong></td><td>60% edu + 40% (1 − income)</td><td>education, lifestyle</td></tr>
+  <tr><td><strong>Retail Vacuum</strong></td><td>40% income + 30% jobs + 30% (1 − lifestyle density)</td><td>industry</td></tr>
+  <tr><td><strong>Housing Gap</strong></td><td>40% jobs + 30% income + 30% (1 − overhang)</td><td>all three</td></tr>
+</table>
+
+<h3>Worked example — Kinta, Apex Score</h3>
+<table>
+  <tr><th>Term</th><th class="num">Weight</th><th class="num">Value</th><th class="num">Contribution</th></tr>
+  <tr><td>Employment base</td><td class="num">0.30</td><td class="num">1.000</td><td class="num">0.300</td></tr>
+  <tr><td>Median household income</td><td class="num">0.30</td><td class="num">0.855</td><td class="num">0.257</td></tr>
+  <tr><td>Education index (proxy)</td><td class="num">0.20</td><td class="num">1.000</td><td class="num">0.200</td></tr>
+  <tr><td>Low unsold housing overhang</td><td class="num">0.20</td><td class="num">1 − 1.000 = 0.000</td><td class="num">0.000</td></tr>
+  <tr><td><strong>District score</strong></td><td></td><td></td><td class="num"><strong>0.756</strong></td></tr>
+</table>
+<p>Hulu Perak scores only 0.275 (lowest jobs and income). These are exactly the bars shown in the drawer's <em>Score breakdown</em>.</p>
+
+<h3>Step 3 — District ranking</h3>
+<p>Ranking districts is simply sorting their scores. For Apex: Kinta 0.756 → Muallim 0.606 → Perak Tengah 0.576 → Manjung 0.534 → Kampar 0.525 → … → Hulu Perak 0.275. The map does not show this list directly; it shows hexagon cells built on top of it.</p>
+
+<h2 class="page-break">5. How each point learns its district (PostGIS)</h2>
+<p>An OSM cafe only has a latitude and longitude. <code>resolve_districts()</code> sends every point to the database and asks "which district polygon contains this point?":</p>
+<pre>JOIN districts d ON ST_Covers(d.geom, ST_SetSRID(ST_MakePoint(lon, lat), 4326))</pre>
+<p>The GiST spatial index makes this fast, and the answer is cached in memory, so it runs once per server start. Each point then inherits its district's score as its <strong>weight</strong>:</p>
+<pre>{ "name": "Starbucks", "lat": 4.595, "lon": 101.089,
+  "category": "lifestyle", "district": "Kinta", "weight": 0.756 }</pre>
+<p>Every point in Kinta therefore carries the same weight, 0.756. The API returns ~4,375 such points together with the formula and the full district breakdown.</p>
+
+<h2>6. Hexagons, anchors &amp; cell index (<code>lib/hexbin.js</code>)</h2>
+
+<h3>What are anchors?</h3>
+<p>Anchors are <strong>real places from OpenStreetMap</strong> — evidence that activity exists at a location:</p>
+<ul>
+  <li><span class="dot" style="background:#2a78d6"></span><strong>Lifestyle</strong> — cafes and malls</li>
+  <li><span class="dot" style="background:#eb6834"></span><strong>Education</strong> — universities and colleges</li>
+  <li><span class="dot" style="background:#1baf7a"></span><strong>Industry</strong> — industrial zones</li>
+</ul>
+<p>Each pillar uses specific anchor types; Retail Vacuum, for example, uses only industrial zones (where the workers are).</p>
+
+<h3>How the hexagons are built</h3>
+<ol>
+  <li>Perak is covered with an invisible honeycomb of hexagons, <strong>1.5 km from centre to corner</strong>.</li>
+  <li>Each point is converted from latitude/longitude to metres (a local flat projection, accurate to under 1% at Perak's latitude) and dropped into the hexagon it falls in, using axial hex-grid coordinates with cube rounding.</li>
+  <li>Only hexagons containing at least one anchor exist — empty jungle shows nothing. For Apex that gives 272 cells.</li>
+</ol>
+
+<h3>What is the cell index?</h3>
+<pre>cell index = sum of the weights of every anchor inside the hexagon
+           = (number of anchors) × (district score)     ← when all fall in one district
+
+Downtown Ipoh cell:  527 anchors × 0.756 = 398.41
+Hulu Perak cell:       2 anchors × 0.275 =   0.55</pre>
+<div class="key">The cell index rewards <strong>both</strong> a strong district <strong>and</strong> a high concentration of real activity. That combination is what the dashboard calls a <em>micro-city</em>.</div>
+
+<h3>How cells are ranked and coloured</h3>
+<p>Raw cell indexes span 0.3 to 398, so colouring them directly would paint only Ipoh red and everything else identical blue. Instead each cell gets a <strong>percentile rank</strong> — the share of all cells it beats (ties share a mid-rank). The percentile is split into seven colour steps:</p>
+<div class="scale">
+  <span style="background:#184f95"></span><span style="background:#2a78d6"></span><span style="background:#86b6ef"></span><span style="background:#e1e0d9"></span><span style="background:#f1a9a0"></span><span style="background:#e34948"></span><span style="background:#a82a2c"></span>
+</div>
+<div class="scale-labels"><span>0–14% · low</span><span>Perak median</span><span>86–100% · high</span></div>
+<table style="margin-top:12px">
+  <tr><th>Percentile</th><th>Verdict label</th></tr>
+  <tr><td>≥ 85%</td><td>Prime opportunity</td></tr>
+  <tr><td>≥ 60%</td><td>Strong opportunity</td></tr>
+  <tr><td>≥ 40%</td><td>Moderate opportunity</td></tr>
+  <tr><td>&lt; 40%</td><td>Weak opportunity</td></tr>
+</table>
+<div class="key"><strong>"Which micro-city is best?"</strong> — the deep-red hexagons: the top ~14% of all 1.5 km cells in Perak for the selected pillar.</div>
+
+<h2 class="page-break">7. How the map is drawn (<code>MapView.jsx</code>)</h2>
+<p>The map is a stack of transparent layers rendered on the GPU by deck.gl, bottom to top:</p>
+<table>
+  <tr><th>#</th><th>Layer</th><th>What you see</th></tr>
+  <tr><td>1</td><td><strong>Basemap</strong> (MapLibre + CARTO)</td><td>Roads, towns, sea. Positron in light mode, Dark Matter in dark mode. A background picture only — it knows nothing about the data.</td></tr>
+  <tr><td>2</td><td><strong>District boundaries</strong> (<code>GeoJsonLayer</code>)</td><td>The 12 outlines, served from PostGIS and simplified with <code>ST_SimplifyPreserveTopology</code> (~100 m tolerance) down to 73 KB.</td></tr>
+  <tr><td>3</td><td><strong>District names</strong> (<code>TextLayer</code>)</td><td>Placed at the centre of each district's main polygon; hidden past zoom 10.5.</td></tr>
+  <tr><td>4</td><td><strong>Glow heatmap</strong> (toggle)</td><td>Blurred density cloud of the same points, for presentations.</td></tr>
+  <tr><td>5</td><td><strong>Hexagons</strong> (<code>PolygonLayer</code>)</td><td>The coloured cells; hoverable and clickable. In glow mode they become invisible but stay clickable.</td></tr>
+  <tr><td>6</td><td><strong>Selected hexagon</strong></td><td>Thick outline around the clicked cell.</td></tr>
+  <tr><td>7</td><td><strong>Anchor pins</strong> (<code>ScatterplotLayer</code>)</td><td>Real places, coloured by category.</td></tr>
+</table>
+<h3>Zoom handover</h3>
+<p>Between zoom 11 and 12.5 the hexagons fade to 15% strength while the anchor pins fade in. Zoomed out, the map answers "where is the opportunity?"; zoomed in, it answers "these are the actual cafes, colleges and factories that prove it".</p>
+
+<h2>8. Tooltip, drawer &amp; verdict</h2>
+<h3>Hover a hexagon</h3>
+<p>Shows the district, rank ("Top 1%"), cell index, district score, anchor counts and the formula's metric values.</p>
+<h3>Click a hexagon — the analytics drawer</h3>
+<ul>
+  <li><strong>Verdict</strong> — rule-based, not AI: rank band + strongest factor + weakest factor + a pillar-specific recommendation. Example: <em>"Its strongest driver is employment base (1.00); the main drag is low unsold housing overhang (0.00). Prioritise for flagship mixed-use or township development."</em></li>
+  <li><strong>Score breakdown</strong> — one bar per formula term. The grey track is the term's weight; the purple fill is how much of it the district earns.</li>
+  <li><strong>Anchors in this cell</strong> — count per category and up to six named places.</li>
+  <li><strong>District fundamentals</strong> — population, workforce, income, unsold units, cafes per 10k.</li>
+  <li><strong>Zoom to anchors</strong> — flies the camera in so the pins appear.</li>
+</ul>
+
+<h2>9. Known limitations</h2>
+<div class="warn">
+<ol style="margin: 0; padding-left: 18px;">
+  <li><strong>One score per district.</strong> All places in a district share its score. Cells in Ipoh beat cells in Batu Gajah only because Ipoh has <em>more anchors</em>, not better local economics. Finer differences need sub-district (mukim) data.</li>
+  <li><strong>Cafe density dominates.</strong> 4,007 lifestyle anchors versus 105 education and 263 industry: for Apex and Housing, "red" largely means "many cafes in a good district".</li>
+  <li><strong><code>edu_index</code> is a placeholder</strong> (hardcoded 1.0 / 0.4), not measured data.</li>
+  <li><strong>"Jobs" means total employed persons</strong>, not new jobs created, despite the column name.</li>
+  <li><strong>Rankings are relative.</strong> "Top 1%" means best within Perak for that pillar, not good in absolute terms.</li>
+</ol>
+</div>
+
+</body>
+</html>
